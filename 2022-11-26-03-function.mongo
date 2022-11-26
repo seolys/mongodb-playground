@@ -1,0 +1,85 @@
+db.bulk.bulkWrite(
+    [
+      {insertOne: {document: {doc: 1, order: 1}}},
+      {insertOne: {document: {doc: 2, order: 2}}},
+      {insertOne: {document: {doc: 3, order: 3}}},
+      {insertOne: {document: {doc: 4, order: 4}}},
+      {insertOne: {document: {doc: 4, order: 5}}},
+      {insertOne: {document: {doc: 5, order: 6}}},
+      {
+        deleteOne: {
+          filter: {doc: 3}
+        }
+      },
+      {
+        updateOne: {
+          filter: {doc: 2},
+          update: {
+            $set: {doc: 12}
+          }
+        }
+      }
+    ]
+    )
+
+db.bulk.bulkWrite(
+    [
+      {insertOne: {document: {doc: 1, order: 1}}},
+      {insertOne: {document: {doc: 2, order: 2}}},
+      {insertOne: {document: {doc: 3, order: 3}}},
+      {insertOne: {document: {doc: 4, order: 4}}},
+      {insertOne: {document: {doc: 4, order: 5}}},
+      {insertOne: {document: {doc: 5, order: 6}}},
+      {
+        updateOne: {
+          filter: {doc: 2},
+          update: {
+            $set: {doc: 3}
+          }
+        }
+      },
+      {
+        deleteMany: {
+          filter: {doc: 3}
+        }
+      }
+    ],
+    {ordered: false}
+    )
+
+db.bulk.find()
+
+// 개수 확인하기(실제로 실행)
+db.bulk.countDocuments()
+
+// 예상 document 개수 확인
+db.bulk.estimatedDocumentCount()
+
+db.bulk.distinct("doc")
+
+db.bulk.find()
+
+// 1개씩만 수정된다. 수정 전 데이터 반환 후 데이터 수정.
+// Oracle의 Sequence, MySQL의 Auto Increment와 비슷한 기능
+db.bulk.findAndModify({
+  query: {doc: 13},
+  sort: {order: -1},
+  update: {
+    $inc: {doc: 1}
+  }
+})
+db.bulk.find().sort()
+db.bulk.getIndexes()
+db.bulk.createIndex({doc: 1})
+
+db.bulk.updateOne({doc:1}, {$set: {_id: 11}}) // 오류: _id는 수정 불가
+db.bulk.replaceOne({doc:1}, {_id:1, doc:13}) // 오류: _id는 수정 불가
+db.bulk.replaceOne({doc:1}, {doc:13}) // id를 제외한 값 대체
+
+db.sequence.insertOne({seq: 0})
+db.sequence.findAndModify({
+  query: {},
+  sort: {seq: -1},
+  update: {$inc: {seq: 1}}
+})
+
