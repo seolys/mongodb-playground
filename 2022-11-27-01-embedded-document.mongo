@@ -1,0 +1,37 @@
+show dbs;
+
+use sample_supplies
+
+show collections
+
+db.sales.findOne()
+
+// 순서가 보장되어야 함
+db.sales.findOne({
+  customer: {
+    gender: 'M',
+    age: 42,
+    email: "cauho@witwuta.sv",
+    satisfaction: 4
+  }
+})
+
+// 순서가 보장되어야함
+db.sales.findOne({
+  customer: {
+    satisfaction: 4,
+    gender: 'M',
+    age: 42,
+    email: "cauho@witwuta.sv"
+  }
+})
+
+db.sales.findOne({
+  "customer.satisfaction": 4,
+  "customer.email": "cauho@witwuta.sv"
+})
+
+db.sales.findOne({
+  "customer.satisfaction": 4,
+  "customer.age": {$lt : 20}
+})

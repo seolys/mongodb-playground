@@ -1,0 +1,191 @@
+show dbs
+use test
+
+db.students.insertMany([
+  {_id: 1, grades: [85, 80, 80]},
+  {_id: 2, grades: [88, 90, 92]},
+  {_id: 3, grades: [85, 100, 90]}
+])
+db.students.find()
+
+// 특정값만 수정
+db.students.updateOne(
+    {_id: 1, grades: 80},
+    {$set: {"grades.$": 82}}
+)
+
+// 전체 10 증가
+db.students.updateMany(
+    {},
+    {$inc: {"grades.$[]": 10}}
+)
+
+db.students.insertMany([
+  {
+    _id: 4, grades: [
+      {grade: 80, mean: 75, std: 8},
+      {grade: 85, mean: 90, std: 5},
+      {grade: 85, mean: 85, std: 8}
+    ]
+  },
+])
+
+db.students.find()
+
+db.students.findOne(
+    {_id: 4, "grades.grade": 85}
+)
+
+db.students.updateOne(
+    {_id: 4, "grades.grade": 85},
+    {$set: {"grades.$.std": 6}} // $: 1개만 변경하겠다
+)
+
+db.students.updateOne(
+    {_id: 4, grades: {$elemMatch: {grade: {$gte: 85}}}},
+    {$set: {"grades.$[].grade": 100}} // []: 배열 전체를 변경하겠다
+)
+
+db.students.insertMany([
+  {
+    _id: 6, grades: [
+      {grade: 90, mean: 75, std: 8},
+      {grade: 87, mean: 90, std: 6},
+      {grade: 85, mean: 85, std: 8}
+    ]
+  },
+])
+
+db.students.find()
+
+db.students.updateMany(
+    {_id: 6},
+    {$set: {"grades.$[element].grade": 100}},
+    {arrayFilters: [{"element.grade": {$gte: 87}}]} // 87이상인 값들만 대상
+)
+
+db.students.insertOne(
+    {
+      _id: 7,
+      grades: [
+        {type: "quiz", questions: [10, 8, 5]},
+        {type: "quiz", questions: [8, 9, 6]},
+        {type: "hw", questions: [5, 4, 3]},
+        {type: "exam", questions: [25, 10, 23, 0]},
+      ]
+    }
+)
+
+// 8보다 큰 값들만 2 증가
+db.students.updateOne(
+    {_id: 7},
+    {$inc: {"grades.$[].questions.$[score]": 2}},
+    {arrayFilters: [{"score": {$gte: 8}}]}
+)
+
+db.shopping.insertMany([
+  {
+    _id: 1,
+    cart: ['banana', 'cheeze', 'milk'],
+    coupons: ['10%', '20%', '30%']
+  },
+  {
+    _id: 2,
+    cart: [],
+    coupons: []
+  }
+])
+
+db.shopping.find()
+
+// 배열에 값이 없을경우에만 삽입
+db.shopping.updateOne(
+    {_id: 1},
+    {$addToSet: {cart: 'beer'}} // set 자료구조
+)
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$addToSet: {cart: ['beer', 'candy']}} // 배열이 삽입되어버림
+)
+db.shopping.find()
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$addToSet: {cart: {$each: ['beer', 'candy']}}} // 각각 삽입
+)
+
+// 특정값 삭제
+db.shopping.updateOne(
+    {_id: 1},
+    {$pull: {cart: 'beer'}}
+)
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$pull: {cart: {$in: [['beer', 'candy'], 'milk']}}}
+)
+db.shopping.find()
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$pop: {cart: -1}} // -1: 첫번째 값
+)
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$pop: {cart: 1, coupons: -1}} // 1: 마지막 값
+)
+db.shopping.find()
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$push: {cart: 'popcorn'}}
+)
+
+db.shopping.updateOne(
+    {_id: 1},
+    {$push: {coupons: {$each: ['25%', '35%']}}} // 각각 삽입
+)
+
+db.shopping.updateMany(
+    {},
+    {
+      $push: {
+        coupons: {
+          $each: ['90%', '70%'],
+          $position: 0 // 위치지정 [0: 첫번째]
+        }
+      }
+    } // 각각 삽입
+)
+db.shopping.find()
+
+db.shopping.updateMany(
+    {},
+    {
+      $push: {
+        coupons: {
+          $each: ['15%', '20%'],
+          $position: 0, // 위치지정 [0: 첫번째]
+          $slice: 5 // 개수 제한
+        }
+      }
+    } // 각각 삽입
+)
+db.shopping.find()
+
+db.shopping.updateMany(
+    {},
+    {
+      $push: {
+        coupons: {
+          $each: ['90%', '99%'],
+          $position: -1, // 위치지정 [-1: 마지막]
+          $sort: -1, // 정렬 [-1: 내림차순]
+          $slice: 5 // 개수 제한
+        }
+      }
+    } // 각각 삽입
+)
+db.shopping.find()
