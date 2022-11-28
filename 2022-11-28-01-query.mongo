@@ -1,0 +1,48 @@
+// 1. sample_mflix database의 movies collection 전체를 조회한다.
+show dbs
+use sample_mflix
+show collections
+
+// 2. movies collection의 Document의 개수를 조회한다.
+db.movies.countDocuments()
+db.movies.estimatedDocumentCount()
+
+// 3. movies collection 전체를 조회하는데 title,year,genres,runtime,rated 필드를 출력하고 _id필드는 출력하지 않는다.
+db.movies.find(
+    {},
+    {
+      _id: 0,
+      title: 1,
+      year: 1,
+      genres: 1,
+      runtime: 1,
+      rated: 1,
+    }
+)
+
+// 4. movies collection에서 runtime이 100분 이하인 Document를 조회한다.
+db.movies.find({
+  runtime: {$lte: 100}
+})
+
+// 5. movies collection에서 runtime이 100분 이하이고 genres에 Drama가 포함된 Document를 조회한다.
+db.movies.find({
+  runtime: {$lte: 100},
+  genres: {$in: ["Drama"]}
+})
+
+// 6. movies collection에서 runtime이 100분 이하이고 genres가 유일하게 Drama인 Document를 조회한다.
+db.movies.find({
+  runtime: {$lte: 100},
+  genres: ["Drama"]
+})
+
+// 7. movies collection에서 runtime이 100분 이하이고 개봉년도가 2015년 이상이거나 1925년 이하인 영화를 찾는다
+db.movies.find({
+  runtime: {$lte: 100},
+  $or: [
+    {year: {$gte: 2015}}
+    ,
+    {year: {$lte: 1925}}
+  ]
+})
