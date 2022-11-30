@@ -1,0 +1,21 @@
+show dbs
+use sample_mflix
+
+// 8. tomatoes viewer 평점이 4.5 이상이거나, critic 평점이 9.5 이상인 데이터 중 런타임이 긴 5개를 출력한다.
+db.movies.find(
+    {
+      $or: [
+        {
+          "tomatoes.viewer.rating": {
+            $gte: 4.5
+          }
+        },
+        {
+          "tomatoes.critic.rating": {
+            $gte: 9.5
+          }
+        }
+      ]
+    },
+    {title:1, runtime:1, tomatoes:1}
+).sort({runtime: -1}).limit(5)
