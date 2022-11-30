@@ -37,6 +37,14 @@ db.movies.find({
   genres: ["Drama"]
 })
 
+db.movies.find({
+  $and: [
+    {runtime: {$lte: 100}},
+    {genres: "Drama"},
+    {genres: {$size: 1}}
+  ]
+})
+
 // 7. movies collection에서 runtime이 100분 이하이고 개봉년도가 2015년 이상이거나 1925년 이하인 영화를 찾는다
 db.movies.find({
   runtime: {$lte: 100},
@@ -46,3 +54,20 @@ db.movies.find({
     {year: {$lte: 1925}}
   ]
 })
+
+db.movies.find({
+      $and: [
+        {runtime: {$lte: 100}},
+        {type: {$ne: 'series'}},
+        {
+          $or: [
+            {year: {$gte: 2015}}
+            ,
+            {year: {$lte: 1925}}
+          ]
+        }
+      ]
+    },
+    {
+      runtime: 1,type: 1, year: 1
+    }).sort({year: 1})
